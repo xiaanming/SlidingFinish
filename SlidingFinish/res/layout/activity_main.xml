@@ -1,0 +1,26 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical" >
+
+    <Button
+        android:id="@+id/normal_activity"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="普通的Activity" />
+
+    <Button
+        android:id="@+id/absListview_activity"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="有AbsListView的Activity" />
+
+    <Button
+        android:id="@+id/scrollview_activity"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="有ScrollView的Activity" />
+
+</LinearLayout>
