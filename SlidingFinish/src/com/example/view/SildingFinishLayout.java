@@ -218,9 +218,6 @@ public class SildingFinishLayout extends RelativeLayout implements
 
 				if (onSildingFinishListener != null && isFinish) {
 					onSildingFinishListener.onSildingFinish();
-				}else{
-					//如果没有设置回调接口, 直接划到起始位置
-					scrollOrigin();
 				}
 			}
 		}
