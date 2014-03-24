@@ -5,15 +5,14 @@ import java.util.List;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.View;
-import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import com.example.slidingfinish.R;
 import com.example.view.SildingFinishLayout;
 import com.example.view.SildingFinishLayout.OnSildingFinishListener;
 
@@ -22,14 +21,17 @@ public class AbsActivity extends Activity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_abslistview);
-
+		
+		View rootView = getWindow().getDecorView();
+		rootView.getDrawingCache(false);
+		Bitmap b = rootView.getDrawingCache();
+		
 		for (int i = 0; i <= 30; i++) {
 			list.add("测试数据" + i);
 		}
-
+		
 		ListView mListView = (ListView) findViewById(R.id.listView);
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(
 				AbsActivity.this, android.R.layout.simple_list_item_1, list);
@@ -46,7 +48,7 @@ public class AbsActivity extends Activity {
 				});
 
 		// touchView要设置到ListView上面
-		mSildingFinishLayout.setTouchView(mListView);
+//		mSildingFinishLayout.setTouchView(mListView);
 
 		mListView.setOnItemClickListener(new OnItemClickListener() {
 

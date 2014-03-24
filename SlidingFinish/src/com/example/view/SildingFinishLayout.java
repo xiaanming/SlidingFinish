@@ -3,35 +3,25 @@ package com.example.view;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
-import android.view.View;
-import android.view.View.OnTouchListener;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
 import android.widget.RelativeLayout;
-import android.widget.ScrollView;
 import android.widget.Scroller;
 
 /**
  * 自定义可以滑动的RelativeLayout, 类似于IOS的滑动删除页面效果，当我们要使用
- * 此功能的时候，需要将该Activity的顶层布局设置为SildingFinishLayout，
- * 然后需要调用setTouchView()方法来设置需要滑动的View
+ * 此功能的时候，需要将该Activity的顶层布局设置为SildingFinishLayout
  * 
  * @author xiaanming
  * 
  * @blog http://blog.csdn.net/xiaanming
  * 
  */
-public class SildingFinishLayout extends RelativeLayout implements
-		OnTouchListener {
+public class SildingFinishLayout extends RelativeLayout{
 	/**
 	 * SildingFinishLayout布局的父布局
 	 */
 	private ViewGroup mParentView;
-	/**
-	 * 处理滑动逻辑的View
-	 */
-	private View touchView;
 	/**
 	 * 滑动的最小距离
 	 */
@@ -56,9 +46,7 @@ public class SildingFinishLayout extends RelativeLayout implements
 	 * SildingFinishLayout的宽度
 	 */
 	private int viewWidth;
-	/**
-	 * 记录是否正在滑动
-	 */
+	
 	private boolean isSilding;
 	
 	private OnSildingFinishListener onSildingFinishListener;
@@ -75,13 +63,72 @@ public class SildingFinishLayout extends RelativeLayout implements
 		mTouchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
 		mScroller = new Scroller(context);
 	}
+	
+
+	/**
+	 * 事件拦截操作
+	 */
+	@Override
+	public boolean onInterceptTouchEvent(MotionEvent ev) {
+		
+		switch (ev.getAction()) {
+		case MotionEvent.ACTION_DOWN:
+			downX = tempX = (int) ev.getRawX();
+			downY = (int) ev.getRawY();
+			break;
+		case MotionEvent.ACTION_MOVE:
+			int moveX = (int) ev.getRawX();
+			//满足此条件屏蔽SildingFinishLayout里面子类的touch事件
+			if (Math.abs(moveX - downX) > mTouchSlop
+					&& Math.abs((int) ev.getRawY() - downY) < mTouchSlop) {
+				return true;
+			}
+			break;
+		}
+		
+		return super.onInterceptTouchEvent(ev);
+	}
+	
+
+	@Override
+	public boolean onTouchEvent(MotionEvent event) {
+		switch (event.getAction()) {
+		case MotionEvent.ACTION_MOVE:
+			int moveX = (int) event.getRawX();
+			int deltaX = tempX - moveX;
+			tempX = moveX;
+			if (Math.abs(moveX - downX) > mTouchSlop
+					&& Math.abs((int) event.getRawY() - downY) < mTouchSlop) {
+				isSilding = true;
+			}
+			
+			if (moveX - downX >= 0 && isSilding) {
+				mParentView.scrollBy(deltaX, 0);
+			}
+			break;
+		case MotionEvent.ACTION_UP:
+			isSilding = false;
+			if (mParentView.getScrollX() <= -viewWidth / 2) {
+				isFinish = true;
+				scrollRight();
+			} else {
+				scrollOrigin();
+				isFinish = false;
+			}
+			break;
+		}
+		
+		return true;
+	}
+	
+	
 
 	@Override
 	protected void onLayout(boolean changed, int l, int t, int r, int b) {
 		super.onLayout(changed, l, t, r, b);
 		if (changed) {
 			// 获取SildingFinishLayout所在布局的父布局
-			mParentView = (ViewGroup) this.getParent();
+			mParentView = (ViewGroup) this.getParent().getParent();
 			viewWidth = this.getWidth();
 		}
 	}
@@ -96,19 +143,6 @@ public class SildingFinishLayout extends RelativeLayout implements
 		this.onSildingFinishListener = onSildingFinishListener;
 	}
 
-	/**
-	 * 设置Touch的View
-	 * 
-	 * @param touchView
-	 */
-	public void setTouchView(View touchView) {
-		this.touchView = touchView;
-		touchView.setOnTouchListener(this);
-	}
-
-	public View getTouchView() {
-		return touchView;
-	}
 
 	/**
 	 * 滚动出界面
@@ -131,81 +165,6 @@ public class SildingFinishLayout extends RelativeLayout implements
 		postInvalidate();
 	}
 
-	/**
-	 * touch的View是否是AbsListView， 例如ListView, GridView等其子类
-	 * 
-	 * @return
-	 */
-	private boolean isTouchOnAbsListView() {
-		return touchView instanceof AbsListView ? true : false;
-	}
-
-	/**
-	 * touch的view是否是ScrollView或者其子类
-	 * 
-	 * @return
-	 */
-	private boolean isTouchOnScrollView() {
-		return touchView instanceof ScrollView ? true : false;
-	}
-
-	@Override
-	public boolean onTouch(View v, MotionEvent event) {
-		switch (event.getAction()) {
-		case MotionEvent.ACTION_DOWN:
-			downX = tempX = (int) event.getRawX();
-			downY = (int) event.getRawY();
-			break;
-		case MotionEvent.ACTION_MOVE:
-			int moveX = (int) event.getRawX();
-			int deltaX = tempX - moveX;
-			tempX = moveX;
-			if (Math.abs(moveX - downX) > mTouchSlop
-					&& Math.abs((int) event.getRawY() - downY) < mTouchSlop) {
-				isSilding = true;
-
-				// 若touchView是AbsListView，
-				// 则当手指滑动，取消item的点击事件，不然我们滑动也伴随着item点击事件的发生
-				if (isTouchOnAbsListView()) {
-					MotionEvent cancelEvent = MotionEvent.obtain(event);
-					cancelEvent
-							.setAction(MotionEvent.ACTION_CANCEL
-									| (event.getActionIndex() << MotionEvent.ACTION_POINTER_INDEX_SHIFT));
-					v.onTouchEvent(cancelEvent);
-				}
-
-			}
-
-			if (moveX - downX >= 0 && isSilding) {
-				mParentView.scrollBy(deltaX, 0);
-
-				// 屏蔽在滑动过程中ListView ScrollView等自己的滑动事件
-				if (isTouchOnScrollView() || isTouchOnAbsListView()) {
-					return true;
-				}
-			}
-			break;
-		case MotionEvent.ACTION_UP:
-			isSilding = false;
-			if (mParentView.getScrollX() <= -viewWidth / 2) {
-				isFinish = true;
-				scrollRight();
-			} else {
-				scrollOrigin();
-				isFinish = false;
-			}
-			break;
-		}
-
-		// 假如touch的view是AbsListView或者ScrollView 我们处理完上面自己的逻辑之后
-		// 再交给AbsListView, ScrollView自己处理其自己的逻辑
-		if (isTouchOnScrollView() || isTouchOnAbsListView()) {
-			return v.onTouchEvent(event);
-		}
-
-		// 其他的情况直接返回true
-		return true;
-	}
 
 	@Override
 	public void computeScroll() {
@@ -214,10 +173,14 @@ public class SildingFinishLayout extends RelativeLayout implements
 			mParentView.scrollTo(mScroller.getCurrX(), mScroller.getCurrY());
 			postInvalidate();
 
-			if (mScroller.isFinished()) {
+			if (mScroller.isFinished() && isFinish) {
 
-				if (onSildingFinishListener != null && isFinish) {
+				if (onSildingFinishListener != null) {
 					onSildingFinishListener.onSildingFinish();
+				}else{
+					//没有设置OnSildingFinishListener，让其滚动到其实位置
+					scrollOrigin();
+					isFinish = false;
 				}
 			}
 		}
@@ -227,5 +190,7 @@ public class SildingFinishLayout extends RelativeLayout implements
 	public interface OnSildingFinishListener {
 		public void onSildingFinish();
 	}
+
+
 
 }
