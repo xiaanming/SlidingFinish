@@ -3,7 +3,6 @@ package com.example.slidingfinish;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -13,10 +12,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import com.example.view.SildingFinishLayout;
-import com.example.view.SildingFinishLayout.OnSildingFinishListener;
-
-public class AbsActivity extends Activity {
+public class AbsActivity extends BaseActivity {
 	private List<String> list = new ArrayList<String>();
 
 	@Override
@@ -37,18 +33,6 @@ public class AbsActivity extends Activity {
 				AbsActivity.this, android.R.layout.simple_list_item_1, list);
 		mListView.setAdapter(adapter);
 
-		SildingFinishLayout mSildingFinishLayout = (SildingFinishLayout) findViewById(R.id.sildingFinishLayout);
-		mSildingFinishLayout
-				.setOnSildingFinishListener(new OnSildingFinishListener() {
-
-					@Override
-					public void onSildingFinish() {
-						AbsActivity.this.finish();
-					}
-				});
-
-		// touchView要设置到ListView上面
-//		mSildingFinishLayout.setTouchView(mListView);
 
 		mListView.setOnItemClickListener(new OnItemClickListener() {
 

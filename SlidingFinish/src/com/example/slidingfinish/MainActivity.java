@@ -1,13 +1,12 @@
 package com.example.slidingfinish;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 
-public class MainActivity extends Activity implements OnClickListener {
+public class MainActivity extends BaseActivity implements OnClickListener {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -25,6 +24,7 @@ public class MainActivity extends Activity implements OnClickListener {
 		mButtonScroll.setOnClickListener(this);
 
 	}
+	
 
 	@Override
 	public void onClick(View v) {
@@ -44,6 +44,7 @@ public class MainActivity extends Activity implements OnClickListener {
 		startActivity(mIntent);
 		overridePendingTransition(R.anim.base_slide_right_in, R.anim.base_slide_remain);
 	}
+	
 	
 	//Press the back button in mobile phone
 	@Override

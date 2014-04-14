@@ -1,4 +1,4 @@
-<com.example.view.SildingFinishLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/sildingFinishLayout"
     android:layout_width="match_parent"
@@ -97,4 +97,4 @@
         </LinearLayout>
     </ScrollView>
 
-</com.example.view.SildingFinishLayout>
+</RelativeLayout>
