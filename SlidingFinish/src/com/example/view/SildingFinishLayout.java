@@ -136,8 +136,8 @@ public class SildingFinishLayout extends FrameLayout {
 			}
 
 			if (moveX - downX >= 0 && isSilding) {
-//				mContentView.scrollBy(deltaX, 0);
-				mContentView.offsetLeftAndRight(- deltaX);
+				mContentView.scrollBy(deltaX, 0);
+//				mContentView.offsetLeftAndRight(- deltaX);
 				invalidate();
 			}
 			break;
