@@ -6,7 +6,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 
-public class MainActivity extends BaseActivity implements OnClickListener {
+public class MainActivity extends SwipeBackActivity implements OnClickListener {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -42,15 +42,7 @@ public class MainActivity extends BaseActivity implements OnClickListener {
 		}
 
 		startActivity(mIntent);
-		overridePendingTransition(R.anim.base_slide_right_in, R.anim.base_slide_remain);
 	}
 	
-	
-	//Press the back button in mobile phone
-	@Override
-	public void onBackPressed() {
-		super.onBackPressed();
-		overridePendingTransition(0, R.anim.base_slide_right_out);
-	}
 
 }

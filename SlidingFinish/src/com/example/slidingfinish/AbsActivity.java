@@ -12,7 +12,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-public class AbsActivity extends BaseActivity {
+public class AbsActivity extends SwipeBackActivity {
 	private List<String> list = new ArrayList<String>();
 
 	@Override
@@ -41,17 +41,9 @@ public class AbsActivity extends BaseActivity {
 					int position, long id) {
 
 				startActivity(new Intent(AbsActivity.this, NormalActivity.class));
-				overridePendingTransition(R.anim.base_slide_right_in,
-						R.anim.base_slide_remain);
 			}
 		});
 	}
 
-	// Press the back button in mobile phone
-	@Override
-	public void onBackPressed() {
-		super.onBackPressed();
-		overridePendingTransition(0, R.anim.base_slide_right_out);
-	}
 
 }
