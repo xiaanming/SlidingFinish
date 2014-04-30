@@ -35,6 +35,10 @@
             android:theme="@android:style/Theme.Translucent"
             android:name=".ScrollActivity" >
         </activity>
+        
+        <activity 
+            android:theme="@android:style/Theme.Translucent"
+            android:name=".ViewPagerActivity"></activity>
     </application>
 
 </manifest>

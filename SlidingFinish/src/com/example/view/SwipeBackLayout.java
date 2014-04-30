@@ -1,12 +1,17 @@
 package com.example.view;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
@@ -24,6 +29,7 @@ import com.example.slidingfinish.R;
  * 
  */
 public class SwipeBackLayout extends FrameLayout {
+	private static final String TAG = SwipeBackLayout.class.getSimpleName();
 	private View mContentView;
 	private int mTouchSlop;
 	private int downX;
@@ -35,15 +41,7 @@ public class SwipeBackLayout extends FrameLayout {
 	private boolean isFinish;
 	private Drawable mShadowDrawable;
 	private Activity mActivity;
-	
-	
-	//如果里面有ViewPager的处理方法
-	private ViewPager mViewPager;
-	public void setViewPager(ViewPager mViewPager) {
-		this.mViewPager = mViewPager;
-	}
-
-	
+	private List<ViewPager> mViewPagers = new LinkedList<ViewPager>();
 	
 	public SwipeBackLayout(Context context, AttributeSet attrs) {
 		this(context, attrs, 0);
@@ -84,7 +82,10 @@ public class SwipeBackLayout extends FrameLayout {
 	 */
 	@Override
 	public boolean onInterceptTouchEvent(MotionEvent ev) {
-		//处理冲突问题
+		//处理ViewPager冲突问题
+		ViewPager mViewPager = getTouchViewPager(mViewPagers, ev);
+		Log.i(TAG, "mViewPager = " + mViewPager);
+		
 		if(mViewPager != null && mViewPager.getCurrentItem() != 0){
 			return super.onInterceptTouchEvent(ev);
 		}
@@ -137,12 +138,54 @@ public class SwipeBackLayout extends FrameLayout {
 
 		return true;
 	}
+	
+	/**
+	 * 获取SwipeBackLayout里面的ViewPager的集合
+	 * @param mViewPagers
+	 * @param parent
+	 */
+	private void getAlLViewPager(List<ViewPager> mViewPagers, ViewGroup parent){
+		int childCount = parent.getChildCount();
+		for(int i=0; i<childCount; i++){
+			View child = parent.getChildAt(i);
+			if(child instanceof ViewPager){
+				mViewPagers.add((ViewPager)child);
+			}else if(child instanceof ViewGroup){
+				getAlLViewPager(mViewPagers, (ViewGroup)child);
+			}
+		}
+	}
+	
+	
+	/**
+	 * 返回我们touch的ViewPager
+	 * @param mViewPagers
+	 * @param ev
+	 * @return
+	 */
+	private ViewPager getTouchViewPager(List<ViewPager> mViewPagers, MotionEvent ev){
+		if(mViewPagers == null || mViewPagers.size() == 0){
+			return null;
+		}
+		Rect mRect = new Rect();
+		for(ViewPager v : mViewPagers){
+			v.getHitRect(mRect);
+			
+			if(mRect.contains((int)ev.getX(), (int)ev.getY())){
+				return v;
+			}
+		}
+		return null;
+	}
 
 	@Override
 	protected void onLayout(boolean changed, int l, int t, int r, int b) {
 		super.onLayout(changed, l, t, r, b);
 		if (changed) {
 			viewWidth = this.getWidth();
+			
+			getAlLViewPager(mViewPagers, this);
+			Log.i(TAG, "ViewPager size = " + mViewPagers.size());
 		}
 	}
 
