@@ -1,3 +1,6 @@
 SlidingFinish
 =============
-博客地址：http://blog.csdn.net/xiaanming/article/details/20934541
+An Android library that help you to build app with swipe back gesture
+
+# ScreenShot
+![https://github.com/xiaanming/SlidingFinish/blob/master/SlidingFinish/demo.gif][2]
